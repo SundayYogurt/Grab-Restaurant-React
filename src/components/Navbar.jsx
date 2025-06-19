@@ -27,7 +27,9 @@ const Navbar = () => {
             {menuItems.map((item) => {
                 return (
                     <li>
-                        <a href={item.url}>{item.name}</a>
+                        <a href={item.url}>
+                          {item.name}
+                          </a>
                     </li>
                 )
             })}
