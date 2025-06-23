@@ -1,25 +1,25 @@
 # Grab Restaurant (Vite + React + Tailwind + DaisyUI)
 
-โปรเจกต์นี้เป็นเว็บแอปแสดงรายชื่อร้านอาหาร สร้างด้วย React, Vite, TailwindCSS และ DaisyUI  
-**ข้อมูลร้านอาหารถูกเก็บไว้ในไฟล์ db.json (ยังไม่ได้ดึงมาใช้จริงในหน้าเว็บ)**
+เว็บแอปสำหรับแสดงและเพิ่มร้านอาหาร สร้างด้วย React, Vite, TailwindCSS และ DaisyUI  
+ข้อมูลร้านอาหารดึงจาก mock API (json-server)
 
 ---
 
 ## วิธีเริ่มโปรเจกต์
 
-1. สร้างโปรเจกต์ด้วย Vite  
-   ```bash
-   npm create vite@latest
-   # เลือก React
-   cd grab-restaurant
+1. ติดตั้ง dependencies  
+   ```
    npm install
    ```
 
-2. ติดตั้ง TailwindCSS และ DaisyUI  
-   (ในโปรเจกต์นี้เพิ่มไว้ใน dependencies แล้ว)
+2. รัน json-server (mock API)  
+   ```
+   npx json-server --watch src/db.json --port 3000
+   ```
+   - API จะอยู่ที่ `http://localhost:3000/restaurants`
 
-3. รันโปรเจกต์  
-   ```bash
+3. รันโปรเจกต์ React  
+   ```
    npm run dev
    ```
 
@@ -33,90 +33,169 @@ src/
 │   index.css
 │   main.jsx
 │
-├── assets/
-│     react.svg
-│
 ├── components/
 │     Card.jsx
 │     Navbar.jsx
 │     Restaurant.jsx
 │
-└── pages/
+└── Pages/
+      AddRes.jsx
       Home.jsx
 ```
 
 ---
 
-## อธิบายแต่ละไฟล์
+## อธิบายการทำงานของแต่ละไฟล์ (ละเอียด)
 
-### 1. `src/db.json`
-เก็บข้อมูลร้านอาหารในรูปแบบ JSON  
-**ยังไม่ได้ถูกนำมาใช้จริงในหน้าเว็บ (Restaurant.jsx ยัง hardcode ข้อมูล)**
+### main.jsx
 
-### 2. `src/main.jsx`
-ไฟล์ entry point ของแอป เรียกใช้ `<Home />`  
 ```jsx
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import Home from './pages/Home.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
 
-createRoot(document.getElementById('root')).render(
+import AddRes from "./Pages/AddRes.jsx";
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Home />
-  </StrictMode>,
-)
+    <AddRes />
+  </StrictMode>
+);
 ```
+- **import { StrictMode } from "react";**  
+  นำเข้า StrictMode จาก React เพื่อช่วยตรวจสอบปัญหาในคอมโพเนนต์ระหว่างพัฒนา เช่น การใช้ lifecycle methods ที่ deprecated หรือ side effect ที่ไม่เหมาะสม
 
-### 3. `src/pages/Home.jsx`
-หน้า Home หลักของเว็บ  
-- แสดง Navbar
-- แสดงหัวข้อ Grab Restaurant
-- มีช่อง Search (แต่ยังไม่ทำงาน)
-- เรียกใช้ `<Restaurant />` เพื่อแสดงร้านอาหาร
+- **import { createRoot } from "react-dom/client";**  
+  ใช้สำหรับสร้าง root ของ React 18+ เพื่อ render แอปลงใน DOM
 
-### 4. `src/components/Navbar.jsx`
-Navbar ด้านบนของเว็บ  
-- มีเมนู Add Restaurant, Search, About Us
-- มีปุ่ม Register, Login
+- **import "./index.css";**  
+  นำเข้าไฟล์ CSS หลักที่ตั้งค่าด้วย TailwindCSS และ DaisyUI
 
-### 5. `src/components/Restaurant.jsx`
-**แสดง Card ร้านอาหารแบบ hardcode**  
-- นำเข้า Card
-- วาง Card หลายใบ (props title, type, img)
-- ยังไม่ได้อ่านข้อมูลจาก db.json
+- **import AddRes from "./Pages/AddRes.jsx";**  
+  นำเข้าคอมโพเนนต์ AddRes ซึ่งเป็นหน้าฟอร์มสำหรับเพิ่มร้านอาหาร
 
-### 6. `src/components/Card.jsx`
-คอมโพเนนต์สำหรับแสดงข้อมูลร้านอาหารแต่ละร้าน  
-- รับ props: title, type, img
-- มีปุ่ม Edit, Delete (ยังไม่ทำงาน)
+- **createRoot(document.getElementById("root")).render(...)**  
+  สร้าง root แล้ว render แอป (AddRes) ลงใน div ที่มี id="root" ใน index.html
 
-### 7. `src/index.css`
-ตั้งค่า TailwindCSS และ DaisyUI  
+- **<StrictMode>...</StrictMode>**  
+  ครอบ AddRes เพื่อเปิด strict mode
+
+---
+
+### index.css
+
 ```css
 @plugin "daisyui";
 @import "tailwindcss";
 ```
+- ใช้ TailwindCSS และ DaisyUI สำหรับ utility class และ component UI
 
 ---
 
-## Vite Config (`vite.config.js`)
+### db.json
 
-```js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-})
+```json
+{
+  "restaurants": [
+    {
+      "id": "1",
+      "title": "Raku Tea 楽茶",
+      "type": "ชาไข่มุก",
+      "img": "..."
+    },
+    ...
+  ],
+  "users": [
+    {
+      "username": "user1",
+      "password": "123456",
+      "id": "053f"
+    }
+  ]
+}
 ```
-- ใช้ plugin React และ TailwindCSS
-- ไม่มีการตั้งค่าเพิ่มเติม
+- mock ข้อมูลร้านอาหารและผู้ใช้ ใช้กับ json-server เพื่อจำลอง API
+
+---
+
+### components/Navbar.jsx
+
+- Navbar แสดงเมนูหลัก (Add Restaurant, Search, About Us) และปุ่ม Register/Login
+- รองรับทั้ง mobile (dropdown) และ desktop (menu-horizontal)
+- ใช้ TailwindCSS และ DaisyUI ในการจัด layout
+
+---
+
+### components/Card.jsx
+
+- แสดงข้อมูลร้านอาหารแต่ละร้าน (ชื่อ, ประเภท, รูป)
+- มีปุ่ม Edit, Delete (ยังไม่ทำงาน)
+- รับ props: title, type, img
+
+---
+
+### components/Restaurant.jsx
+
+- รับ props `restaurants` (array)
+- วนลูปแสดง Card ของแต่ละร้านอาหาร
+- ส่ง props ให้ Card แต่ละใบ
+
+---
+
+### Pages/Home.jsx
+
+- ใช้ useState สร้าง state `restaurants` (array)
+- ใช้ useEffect ดึงข้อมูลร้านอาหารจาก API (`http://localhost:3000/restaurants`) เมื่อ component mount
+- ส่งข้อมูลร้านอาหารไปให้ Restaurant แสดงผล
+- มีช่อง Search (ยังไม่ทำงาน)
+- แสดง Navbar และหัวข้อ Grab Restaurant
+
+---
+
+### Pages/AddRes.jsx
+
+- ฟอร์มเพิ่มร้านอาหารใหม่
+- ใช้ useState เก็บข้อมูลร้านอาหารที่กรอก
+- handleChange อัปเดต state เมื่อกรอกข้อมูล
+- handleSumbit ส่งข้อมูลไป API (POST) เมื่อกด OK
+- แสดงตัวอย่างรูปภาพที่กรอก URL
+
+---
+
+## การใช้ useState, useEffect และพารามิเตอร์
+
+- **useState**  
+  - ใช้สร้าง state ในฟังก์ชันคอมโพเนนต์
+  - ตัวอย่าง:  
+    `const [restaurants, setRestaurants] = useState([]);`
+    - `restaurants` คือค่าปัจจุบัน
+    - `setRestaurants` คือฟังก์ชันสำหรับเปลี่ยนค่า
+
+- **useEffect**  
+  - ใช้สำหรับรันโค้ดเมื่อ component ถูก mount หรือเมื่อ dependency เปลี่ยน
+  - ตัวอย่าง:  
+    ```js
+    useEffect(() => {
+      fetch("http://localhost:3000/restaurants")
+        .then((res) => res.json())
+        .then((resp) => setRestaurants(resp))
+        .catch((e) => console.log(e.message));
+    }, []);
+    ```
+    - รันครั้งเดียวตอน mount (เพราะ dependency array ว่าง)
+
+- **handleChange**  
+  - รับ event จาก input แล้วอัปเดต state ของฟอร์ม
+
+- **handleSumbit**  
+  - ส่งข้อมูลร้านอาหารใหม่ไปยัง API ด้วย fetch (POST)
 
 ---
 
 ## หมายเหตุ
 
-- ข้อมูลร้านอาหารในหน้าเว็บยังเป็น hardcode ใน Restaurant.jsx
-- ถ้าต้องการให้ดึงข้อมูลจาก db.json จริง ๆ ต้องเพิ่ม logic การอ่านไฟล์หรือ fetch ข้อมูล
-- เหมาะกับการทดลองเล่นและฝึก React + Tailwind +
+- ข้อมูลร้านอาหารจะถูกโหลดแบบ dynamic จาก API (json-server)
+- ถ้าต้องการเพิ่ม/แก้ไขข้อมูลร้านอาหาร ให้แก้ที่ `src/db.json` หรือใช้ฟอร์ม AddRes
+- เหมาะกับการทดลองเล่นและฝึก React + Tailwind + DaisyUI
+
+---
