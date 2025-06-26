@@ -1,29 +1,53 @@
-import React, { useState } from "react";
+import { useParams } from "react-router";
+import React, { useState, useEffect } from "react";
 
-// AddRes component สำหรับเพิ่มร้านอาหาร
-const AddRes = () => {
-  // state สำหรับเก็บข้อมูลร้านอาหารใหม่
+
+const Update = () => {
+
+  // 1. ดึง id จาก url ด้วย useParams
+  const { id } = useParams();
+
+  // สร้าง state สำหรับเก็บข้อมูลร้านอาหารที่จะแก้ไข
   const [restaurant, setRestaurant] = useState({
     title: "",
     type: "",
     img: "",
   });
 
-  // handleChange อัปเดต state เมื่อกรอกข้อมูล
+  // 2. ดึงข้อมูลร้านอาหารจาก API ตาม id เมื่อ id เปลี่ยน
+  useEffect(() => {
+    fetch("http://localhost:3000/restaurants/" + id)
+      .then((res) => {
+        // แปลง response เป็น json
+        return res.json();
+      })
+      .then((resp) => {
+        // บันทึกข้อมูลร้านอาหารลงใน state
+        setRestaurant(resp);
+      })
+      // กรณีเกิด error ให้แสดงใน console
+      .catch((e) => {
+        console.log(e.message);
+      });
+  }, [id]);
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRestaurant({ ...restaurant, [name]: value });
   };
 
-  // handleSubmit ส่งข้อมูลไป API (POST)
   const handleSubmit = async () => {
+    // เริ่มการรอ
     try {
-      const response = await fetch("http://localhost:3000/restaurants", {
-        method: "POST",
+      const response = await fetch("http://localhost:3000/restaurants/" + id, {
+        // ส่งข้อมูลแบบ PUT เพื่ออัปเดต
+        method: "PUT",
         body: JSON.stringify(restaurant),
       });
       if (response.ok) {
-        alert("Restaurant added successfully");
+        // ถ้าอัปเดตสำเร็จ แจ้งเตือนและล้างฟอร์ม
+        alert("Restaurant Updated successfully");
         setRestaurant({
           title: "",
           type: "",
@@ -31,19 +55,23 @@ const AddRes = () => {
         });
       }
     } catch (error) {
+      // กรณีเกิด error ให้แสดงใน console
       console.log(error);
     }
   };
   return (
     <div className="container mx-auto pb-7">
-      {/* ฟอร์มเพิ่มร้านอาหาร */}
-      <form className="max-w-sm mx-auto mt-10 rounded-2xl shadow-lg ">
+
+
+      <form className="max-w-sm mx-auto mt-10 rounded-2xl shadow-xl ">
         <div className="text-center items-center space-y-8 m-10 p-10  ">
           <ul className="text-center items-center space-y-8">
             <li>
-              <label className="text-4xl">added form</label>
+              {/* หัวข้อฟอร์ม */}
+              <label className="text-4xl">Update form</label>
             </li>
             <li>
+              {/* ช่องกรอกชื่อร้าน */}
               <label>Title</label>
               <br />
               <input
@@ -56,6 +84,7 @@ const AddRes = () => {
               ></input>
             </li>
             <li>
+              {/* ช่องกรอกประเภทอาหาร */}
               <label>Type</label>
               <br />
               <input
@@ -68,6 +97,7 @@ const AddRes = () => {
               ></input>
             </li>
             <li>
+              {/* ช่องกรอกลิงก์รูปภาพ */}
               <label>Upload Image</label>
               <br />
               <input
@@ -78,7 +108,7 @@ const AddRes = () => {
                 onChange={handleChange}
                 value={restaurant.img}
               ></input>
-              {/* แสดง preview รูป */}
+              {/* แสดง preview รูปภาพถ้ามี */}
               {restaurant && (
                 <div className="flex items-center gap-3 m-5 ">
                   {restaurant.img && (
@@ -93,11 +123,11 @@ const AddRes = () => {
             </li>
           </ul>
           <div className="m-5 space-x-3.5">
-            {/* ปุ่ม OK */}
+            {/* ปุ่ม update */}
             <button className="btn btn-soft btn-primary" onClick={handleSubmit}>
-              OK
+              update
             </button>
-            {/* ปุ่ม Cancel */}
+            {/* ปุ่ม Cancel (ยังไม่ทำงาน) */}
             <button className="btn btn-soft btn-secondary">Cancel</button>
           </div>
         </div>
@@ -106,4 +136,4 @@ const AddRes = () => {
   );
 };
 
-export default AddRes;
+export default Update;

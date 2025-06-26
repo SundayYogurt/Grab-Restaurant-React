@@ -1,41 +1,62 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import Restaurant from "../components/Restaurant";
 
+// คอมโพเนนต์ Home สำหรับแสดงร้านอาหารและค้นหา
 const Home = () => {
-  const [restaurants, setRestaurants] = useState([]);
-  useEffect(() => {
-    //call api: getAllRestaurants
+  // state สำหรับเก็บร้านอาหารที่ผ่านการกรอง (filter)
+  const [filterRestaurant, setFilterRestaurant] = useState([]);
 
+  // ฟังก์ชัน handleSearch สำหรับค้นหาร้านอาหารตาม keyword
+  const handleSearch = (keyword) => {
+    if( keyword === ""){
+      setFilterRestaurant(restaurants)
+      return
+    }
+    // กรองร้านอาหารที่ title หรือ type ตรงกับ keyword
+    const result = restaurants.filter((restaurant)=>{
+      return (
+        restaurant.title.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()) ||
+        restaurant.type.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())
+      )
+    })
+    setFilterRestaurant(result)
+  }
+
+  // state สำหรับเก็บร้านอาหารทั้งหมด
+  const [restaurants, setRestaurants] = useState([]);
+
+  // ดึงข้อมูลร้านอาหารจาก API เมื่อ component mount
+  useEffect(() => {
     fetch("http://localhost:3000/restaurants")
       .then((res) => {
-        //convert to json
+        // แปลง response เป็น json
         return res.json();
       })
       .then((resp) => {
-        //save to state
+        // บันทึกข้อมูลร้านอาหารทั้งหมดลงใน state
         setRestaurants(resp);
+        setFilterRestaurant(resp)
       })
-      //catch error
+      // กรณีเกิด error ให้แสดงใน console
       .catch((e) => {
         console.log(e.message);
       });
   }, []);
+
+  // ส่วนของการแสดงผล UI
   return (
     <>
       <div className="container mx-auto pb-7">
-        <Navbar />
-
-        {/*Header*/}
+        {/* Header */}
         <div>
           <h1 className="title justify-center text-3xl text-center m-5 p-5">
             Grab Restaurant
           </h1>
         </div>
-
-        {/*Search*/}
+        {/* Search */}
         <div className="mb-5 flex justify-center items-center">
           <label className="input flex items-center gap-3 w-2xl">
+            {/* ไอคอนแว่นขยาย */}
             <svg
               className="h-[1em] opacity-50"
               xmlns="http://www.w3.org/2000/svg"
@@ -52,14 +73,13 @@ const Home = () => {
                 <path d="m21 21-4.3-4.3"></path>
               </g>
             </svg>
-            <input type="search" required placeholder="Search" />
+            {/* ช่อง input สำหรับค้นหา */}
+            <input onChange={(e) => handleSearch(e.target.value)} name="keyword" type="search" required placeholder="Search" />
           </label>
         </div>
       </div>
-
-      {/*Restaurant*/}
-
-      <Restaurant restaurants={restaurants} />
+      {/* แสดงรายชื่อร้านอาหาร */}
+      <Restaurant restaurants={filterRestaurant} />
     </>
   );
 };

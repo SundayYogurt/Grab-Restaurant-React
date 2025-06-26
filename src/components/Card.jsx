@@ -1,7 +1,24 @@
 import React from "react";
 
 const Card = (props) => {
+
+  const deleted = async (id) => {
+    //เริ่มการรอ
+    try {
+      const response = await fetch("http://localhost:3000/restaurants/"+ id, {
+        // รอ
+        method: "DELETE"
+      });
+      if (response.ok) {
+        alert("Restaurant Deleted successfully");
+        window.location.reload(); // Reload the page to see the changes
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
+    
     <div className="card bg-base-100 w-96 shadow-sm">
       <figure>
         <img
@@ -14,8 +31,8 @@ const Card = (props) => {
         <h2 className="card-title">{props.title}</h2>
         <p>{props.type}</p>
         <div className="card-actions justify-end">
-          <button className="btn btn-primary">Edit</button>
-          <button className="btn btn-secondary">Delete</button>
+          <a href={`/update/${props.id}`}><button className="btn btn-primary">Edit</button></a>
+          <button onClick={() => deleted(props.id)} className="btn btn-secondary">Delete</button>
         </div>
       </div>
     </div>
