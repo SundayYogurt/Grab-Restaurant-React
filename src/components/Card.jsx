@@ -4,6 +4,9 @@ const Card = (props) => {
 
   const deleted = async (id) => {
     //เริ่มการรอ
+     const confirmDelete = window.confirm("Are you sure you want to delete this restaurant?");
+     if (!confirmDelete) return; // ถ้าไม่ยืนยัน ก็ไม่ทำอะไร
+
     try {
       const response = await fetch("http://localhost:3000/restaurants/"+ id, {
         // รอ

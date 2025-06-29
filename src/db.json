@@ -1,12 +1,6 @@
 {
   "restaurants": [
     {
-      "id": "6",
-      "title": "Maru waffle - the walk ราชพฤกษ์",
-      "type": "ของหวาน มมฟ",
-      "img": "https://food-cms.grab.com/compressed_webp/merchants/3-C3EAJ7W2WGCHCT/hero/e797bfc619e149be988a8905f3989f1e_1648047679025283875.webp"
-    },
-    {
       "id": "7",
       "title": "Fire Tiger Coffee - Siam Block I",
       "type": "ชาไข่มุก",
@@ -53,12 +47,6 @@
       "title": "ครัวลุงบุญ",
       "type": "ร้านอาหาร",
       "img": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2d/4c/ba/a5/outdoor.jpg"
-    },
-    {
-      "id": "3941",
-      "title": "Tans Curry Rice",
-      "type": "แกงกะหรี่",
-      "img": "https://lh3.googleusercontent.com/p/AF1QipO7K5_uF91Z6GtIioShJkpf1LYHf4CWETaLzt97=w390-h262-n-k-no"
     }
   ],
   "users": [
